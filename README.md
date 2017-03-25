@@ -7,7 +7,9 @@
 ### 示例Apk程序
 [点我下载](https://fir.im/18z5)
 
+### 一脸懵逼.gif
 
+![](/img/GIF.gif)
 
 
 这个项目是基于 [Gifflen](http://jiggawatt.org/badc0de/android/index.html#gifflen) 的.
