@@ -1,0 +1,13 @@
+<resources>
+    <string name="app_name">Gifflen-Android</string>
+    <string name="generate">Generate</string>
+    <string name="source">Frames</string>
+    <string name="question_mark">\?</string>
+    <string name="delay_tips">Delay:</string>
+    <string name="quality_tips">Quality:</string>
+    <string name="color_tips">Color:</string>
+    <string name="color_passage">The number of colors to reduce the bitmap to. Valid range is Math.pow(2, 1~8).</string>
+    <string name="delay_passage">the duration between one frame and the next frame.</string>
+    <string name="quality_passage">Quantization quality. Valid range is 1..100.</string>
+    <string name="reset">reset</string>
+</resources>

@@ -1,0 +1,36 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <integer-array name="source">
+        <item>@drawable/mengbi1</item>
+        <item>@drawable/mengbi2</item>
+        <item>@drawable/mengbi3</item>
+        <item>@drawable/mengbi4</item>
+        <item>@drawable/mengbi5</item>
+        <item>@drawable/mengbi6</item>
+        <item>@drawable/mengbi7</item>
+        <item>@drawable/mengbi8</item>
+        <item>@drawable/mengbi9</item>
+        <item>@drawable/mengbi10</item>
+        <item>@drawable/mengbi11</item>
+        <item>@drawable/mengbi12</item>
+        <item>@drawable/mengbi13</item>
+        <item>@drawable/mengbi14</item>
+        <item>@drawable/mengbi15</item>
+        <item>@drawable/mengbi16</item>
+        <item>@drawable/mengbi17</item>
+        <item>@drawable/mengbi18</item>
+        <item>@drawable/mengbi19</item>
+        <item>@drawable/mengbi20</item>
+        <item>@drawable/mengbi21</item>
+        <item>@drawable/mengbi22</item>
+        <item>@drawable/mengbi23</item>
+        <item>@drawable/mengbi24</item>
+        <item>@drawable/mengbi25</item>
+        <item>@drawable/mengbi26</item>
+        <item>@drawable/mengbi27</item>
+        <item>@drawable/mengbi28</item>
+        <item>@drawable/mengbi29</item>
+        <item>@drawable/mengbi30</item>
+        <item>@drawable/mengbi31</item>
+    </integer-array>
+</resources>

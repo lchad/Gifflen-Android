@@ -1,0 +1,194 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/activity_main"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:paddingLeft="@dimen/activity_horizontal_margin"
+    android:paddingRight="@dimen/activity_horizontal_margin"
+    android:paddingTop="8dp"
+    tools:context="com.lchad.gifflen.MainActivity">
+
+
+    <Button
+        android:id="@+id/view_list"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_centerHorizontal="true"
+        android:layout_marginLeft="24dp"
+        android:layout_marginRight="24dp"
+        android:text="@string/source"/>
+
+    <Button
+        android:id="@+id/generate"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_toLeftOf="@id/view_list"
+        android:text="@string/generate"/>
+
+    <Button
+        android:id="@+id/reset"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_toRightOf="@id/view_list"
+        android:text="@string/reset"/>
+
+    <RelativeLayout
+        android:id="@+id/delay_container"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_below="@id/generate"
+        android:layout_marginTop="10dp">
+
+        <TextView
+            android:id="@+id/delay_title"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="28dp"
+            android:text="Delay:"/>
+
+        <TextView
+            android:id="@+id/delay_text"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+
+            android:layout_centerHorizontal="true"
+            android:text="500 ms"
+            android:textColor="@color/colorPrimary"
+            android:textSize="20sp"/>
+
+        <Button
+            android:id="@+id/delay_tip"
+            android:layout_width="24dp"
+            android:layout_height="24dp"
+            android:layout_alignParentRight="true"
+            android:layout_gravity="center_vertical"
+            android:layout_marginLeft="5dp"
+            android:layout_marginTop="28dp"
+            android:background="@color/colorPrimary"
+            android:text="@string/question_mark"
+            android:textColor="#333333"
+            android:textSize="16sp"/>
+
+        <SeekBar
+            android:id="@+id/delay_seek"
+            style="?android:attr/progressBarStyleHorizontal"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_below="@id/delay_text"
+            android:layout_marginLeft="40dp"
+            android:layout_marginTop="5dp"
+            android:layout_toLeftOf="@id/delay_tip"
+            android:max="2000"
+            android:progress="500"/>
+    </RelativeLayout>
+
+    <RelativeLayout
+        android:id="@+id/quality_container"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_below="@id/delay_container">
+
+        <TextView
+            android:id="@+id/quality_title"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="28dp"
+            android:text="Quality:"/>
+
+        <TextView
+            android:id="@+id/quality_text"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+
+            android:layout_centerHorizontal="true"
+            android:text="10"
+            android:textColor="@color/colorPrimary"
+            android:textSize="20sp"/>
+
+        <Button
+            android:id="@+id/quality_tip"
+            android:layout_width="24dp"
+            android:layout_height="24dp"
+            android:layout_alignParentRight="true"
+            android:layout_gravity="center_vertical"
+            android:layout_marginLeft="5dp"
+            android:layout_marginTop="28dp"
+            android:background="@color/colorPrimary"
+            android:text="@string/question_mark"
+            android:textColor="#333333"
+            android:textSize="16sp"/>
+
+        <SeekBar
+
+            android:id="@+id/quality_seek"
+            style="?android:attr/progressBarStyleHorizontal"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_below="@id/quality_text"
+            android:layout_marginLeft="40dp"
+            android:layout_marginTop="5dp"
+            android:layout_toLeftOf="@id/quality_tip"
+            android:progress="10"/>
+    </RelativeLayout>
+
+    <RelativeLayout
+        android:id="@+id/color_container"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_below="@id/quality_container">
+
+        <TextView
+            android:id="@+id/color_title"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="28dp"
+            android:text="Color:"/>
+
+        <TextView
+            android:id="@+id/color_text"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+
+            android:layout_centerHorizontal="true"
+            android:text="256"
+            android:textColor="@color/colorPrimary"
+            android:textSize="20sp"/>
+
+        <Button
+            android:id="@+id/color_tip"
+            android:layout_width="24dp"
+            android:layout_height="24dp"
+            android:layout_alignParentRight="true"
+            android:layout_gravity="center_vertical"
+            android:layout_marginLeft="5dp"
+            android:layout_marginTop="28dp"
+            android:background="@color/colorPrimary"
+            android:text="@string/question_mark"
+            android:textColor="#333333"
+            android:textSize="16sp"/>
+
+        <SeekBar
+            android:id="@+id/color_seek"
+            style="?android:attr/progressBarStyleHorizontal"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_below="@id/color_text"
+            android:layout_marginLeft="40dp"
+            android:layout_marginTop="5dp"
+            android:layout_toLeftOf="@id/color_tip"
+            android:max="8"
+            android:progress="8"/>
+    </RelativeLayout>
+
+    <pl.droidsonroids.gif.GifImageView
+        android:id="@+id/gif_image"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:layout_below="@id/color_container"
+        android:layout_centerInParent="true"
+        android:layout_marginTop="10dp"
+        android:src="@drawable/web_hi_res_512"/>
+
+</RelativeLayout>
