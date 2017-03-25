@@ -21,7 +21,7 @@
         </activity>
         <activity
             android:name=".MengBiListActivity"
-            android:label="Frames">
+            android:label="合成Gif的素材图片">
         </activity>
     </application>
 
