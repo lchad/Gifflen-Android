@@ -29,7 +29,6 @@ import pl.droidsonroids.gif.GifImageView;
  */
 
 public class MainActivity extends AppCompatActivity implements SeekBar.OnSeekBarChangeListener {
-
     /**
      * 申请权限返回标志字段
      */
@@ -89,7 +88,6 @@ public class MainActivity extends AppCompatActivity implements SeekBar.OnSeekBar
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
-
         mDrawableList = getResources().obtainTypedArray(R.array.source);
         findView();
         initView();

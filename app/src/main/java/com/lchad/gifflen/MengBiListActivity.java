@@ -17,13 +17,10 @@ public class MengBiListActivity extends AppCompatActivity {
 
     private RecyclerView mRecyclerView;
 
-    private TypedArray mDrawableList;
-
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_meng_bi_list);
-        mDrawableList = getResources().obtainTypedArray(R.array.source);
         mRecyclerView = (RecyclerView) findViewById(R.id.recycler_view);
         GridLayoutManager manager = new GridLayoutManager(MengBiListActivity.this, 2);
 
@@ -33,12 +30,15 @@ public class MengBiListActivity extends AppCompatActivity {
         mRecyclerView.setAdapter(mengbiAdapter);
     }
 
-    class MengbiAdapter extends RecyclerView.Adapter<MengbiViewHolder> {
+    static class MengbiAdapter extends RecyclerView.Adapter<MengbiViewHolder> {
 
         private final Context context;
 
+        private TypedArray mDrawableList;
+
         public MengbiAdapter(Context context) {
             this.context = context;
+            mDrawableList = context.getResources().obtainTypedArray(R.array.source);
         }
 
         @Override
@@ -48,7 +48,7 @@ public class MengBiListActivity extends AppCompatActivity {
 
         @Override
         public void onBindViewHolder(MengbiViewHolder holder, int position) {
-            holder.bind(position);
+            holder.bind(position, mDrawableList.getResourceId(position, -1));
         }
 
         @Override
@@ -57,7 +57,7 @@ public class MengBiListActivity extends AppCompatActivity {
         }
     }
 
-    class MengbiViewHolder extends RecyclerView.ViewHolder {
+    static class MengbiViewHolder extends RecyclerView.ViewHolder {
 
         private ImageView mImageView;
 
@@ -69,13 +69,13 @@ public class MengBiListActivity extends AppCompatActivity {
             mTextView = (TextView) itemView.findViewById(R.id.position);
         }
 
-        public void bind(int position) {
-            mImageView.setImageResource(mDrawableList.getResourceId(position, -1));
+        public void bind(int position, int resId) {
+            mImageView.setImageResource(resId);
             mTextView.setText("" + (position + 1) + "");
         }
     }
 
-    class SpaceItemDecoration extends RecyclerView.ItemDecoration {
+    static class SpaceItemDecoration extends RecyclerView.ItemDecoration {
 
         private int space;
 

@@ -1,19 +1,25 @@
 package com.lchad.gifflen;
 
-/**
- * Created by lchad on 2017/3/24.
- * Github : https://www.github.com/lchad
- */
 
 import android.content.Context;
 import android.content.res.TypedArray;
+import android.database.Cursor;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
+import android.net.Uri;
+import android.provider.MediaStore;
+import android.text.TextUtils;
+import android.util.Log;
 
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.util.List;
+
+/**
+ * Created by lchad on 2017/3/24.
+ * Github : https://www.github.com/lchad
+ */
 
 public class Gifflen {
 
@@ -32,64 +38,76 @@ public class Gifflen {
     private int mColor;
     private int mQuality;
     private int mDelay;
+    private int mWidth;
+    private int mHeight;
 
-    private Gifflen(int color, int quality, int delay) {
+    private Gifflen(int color, int quality, int delay, int width, int height) {
         this.mColor = color;
         this.mQuality = quality;
         this.mDelay = delay;
+        this.mWidth = width;
+        this.mHeight = height;
     }
 
+    /**
+     * 返回一个Builder对象.
+     *
+     * @return
+     */
     public Builder newBuilder() {
         return new Builder();
     }
 
     /**
-     * Gifflen AddFrame
+     * Gifflen addFrame
      *
      * @param pixels
      * @return
      */
-    public native int AddFrame(int[] pixels);
+    public native int addFrame(int[] pixels);
 
     /**
-     * Gifflen Init
+     * Gifflen init
      *
-     * @param name    File Name : "***.gif"
-     * @param width
-     * @param height
-     * @param color
-     * @param quality
-     * @param delay
-     * @return
+     * @param path    Gif 图片的保存路径
+     * @param width   Gif 图片的宽度.
+     * @param height  Gif 图片的高度.
+     * @param color   Gif 图片的色域.
+     * @param quality 进行色彩量化时的quality参数.
+     * @param delay   相邻的两帧之间的时间间隔.
+     * @return 如果返回值不是0, 就代表着执行失败.
      */
-    public native int Init(String name, int width, int height, int color, int quality, int delay);
+    public native int init(String path, int width, int height, int color, int quality, int delay);
 
     /**
-     * * Gifflen Close
+     * * native层做一些释放资源的操作.
      */
-    public native void Close();
+    public native void close();
 
     /**
-     * Create Gif Animation File
+     * 开始进行Gif生成
      *
-     * @return
+     * @param width  宽度
+     * @param height 高度
+     * @param path   Gif保存的路径
+     * @param files  传入的每一帧图片的File对象
+     * @return 是否成功
      */
     public boolean encode(int width, int height, String path, List<File> files) {
-
+        check(width, height);
         int state;
         int[] pixels = new int[width * height];
 
-        state = Init(path, width, height, mColor, mQuality, mDelay / 10);
+        state = init(path, width, height, mColor, mQuality, mDelay / 10);
         if (state != 0) {
-            // Failed
+            // 失败
             return false;
         }
 
         for (File aFileList : files) {
             Bitmap bitmap;
             try {
-                File file = aFileList;
-                bitmap = BitmapFactory.decodeStream(new FileInputStream(file));
+                bitmap = BitmapFactory.decodeStream(new FileInputStream(aFileList));
             } catch (FileNotFoundException e) {
                 return false;
             }
@@ -98,35 +116,47 @@ public class Gifflen {
                 bitmap = Bitmap.createScaledBitmap(bitmap, width, height, true);
             }
             bitmap.getPixels(pixels, 0, width, 0, 0, width, height);
-            AddFrame(pixels);
+            addFrame(pixels);
             bitmap.recycle();
         }
 
-        Close();
+        close();
 
         return true;
     }
 
     /**
-     * Create Gif Animation File
+     * 开始进行Gif生成
      *
-     * @param context
-     * @param path         File Name
-     * @param width
-     * @param height
-     * @param drawableList Drawable Resrouce R.drawable.* File List
-     * @return
+     * @param path  Gif保存的路径
+     * @param files 传入的每一帧图片的File对象
+     * @return 是否成功
+     */
+    public boolean encode(String path, List<File> files) {
+        return encode(mWidth, mHeight, path, files);
+    }
+
+    /**
+     * 开始进行Gif生成
+     *
+     * @param context      上下文对象.
+     * @param path         Gif保存的路径.
+     * @param width        宽度.
+     * @param height       高度.
+     * @param drawableList 传入的图片资源id数组.
+     * @return 是否成功.
      */
     public boolean encode(final Context context, final String path, final int width, final int height, final int[] drawableList) {
+        check(width, height);
         if (drawableList == null || drawableList.length == 0) {
             return false;
         }
         int state;
         int[] pixels = new int[width * height];
 
-        state = Init(path, width, height, mColor, mQuality, mDelay / 10);
+        state = init(path, width, height, mColor, mQuality, mDelay / 10);
         if (state != 0) {
-            // Failed
+            // 失败
             return false;
         }
 
@@ -137,34 +167,177 @@ public class Gifflen {
                 bitmap = Bitmap.createScaledBitmap(bitmap, width, height, true);
             }
             bitmap.getPixels(pixels, 0, width, 0, 0, width, height);
-            AddFrame(pixels);
+            addFrame(pixels);
             bitmap.recycle();
         }
-        Close();
+        close();
 
         return true;
     }
 
     /**
-     * Create Gif Animation File
+     * 开始进行Gif生成
      *
-     * @param context
-     * @param path       File Name
-     * @param width
-     * @param height
-     * @param typedArray Drawable Resrouce Array R.array.* File List
-     * @return
+     * @param context      上下文对象.
+     * @param path         Gif保存的路径.
+     * @param drawableList 传入的图片资源id数组.
+     * @return 是否成功.
+     */
+    public boolean encode(final Context context, final String path, final int[] drawableList) {
+        return encode(context, path, mWidth, mHeight, drawableList);
+    }
+
+    /**
+     * 开始进行Gif生成
+     *
+     * @param context 上下文对象.
+     * @param path    Gif保存的路径.
+     * @param width   宽度.
+     * @param height  高度.
+     * @param uriList 传入的Uri数组.
+     * @return 是否成功.
+     */
+    public boolean encode(Context context, final String path, final int width, final int height, final List<Uri> uriList) {
+        check(width, height);
+        if (uriList == null || uriList.size() == 0) {
+            return false;
+        }
+        int state;
+        int[] pixels = new int[width * height];
+
+        state = init(path, width, height, mColor, mQuality, mDelay / 10);
+        if (state != 0) {
+            // Failed
+            return false;
+        }
+
+        for (Uri uri : uriList) {
+            Bitmap bitmap;
+            String sourcePath = getRealPathFromURI(context, uri);
+            if (TextUtils.isEmpty(sourcePath)) {
+                Log.e(TAG, "the file path from url is empty");
+                continue;
+            }
+            bitmap = BitmapFactory.decodeFile(sourcePath);
+            if (width < bitmap.getWidth() || height < bitmap.getHeight()) {
+                bitmap = Bitmap.createScaledBitmap(bitmap, width, height, true);
+            }
+            bitmap.getPixels(pixels, 0, width, 0, 0, width, height);
+            addFrame(pixels);
+            bitmap.recycle();
+        }
+        close();
+
+        return true;
+    }
+
+    /**
+     * 开始进行Gif生成
+     *
+     * @param context 上下文对象.
+     * @param path    Gif保存的路径.
+     * @param uriList 传入的Uri数组.
+     * @return 是否成功.
+     */
+    public boolean encode(Context context, final String path, final List<Uri> uriList) {
+        return encode(context, path, mWidth, mHeight, uriList);
+    }
+
+    /**
+     * 从Uri获取图片的绝对路径
+     *
+     * @param context    上下文对象.
+     * @param contentUri 传入的Uri数组.
+     * @return 文件绝对路径.
+     */
+    public String getRealPathFromURI(Context context, Uri contentUri) {
+        Cursor cursor = null;
+        try {
+            String[] proj = {MediaStore.Images.Media.DATA};
+            cursor = context.getContentResolver().query(contentUri, proj, null, null, null);
+            if (cursor != null) {
+                int column_index = cursor.getColumnIndexOrThrow(MediaStore.Images.Media.DATA);
+                cursor.moveToFirst();
+                return cursor.getString(column_index);
+            }
+
+        } finally {
+            if (cursor != null) {
+                cursor.close();
+            }
+        }
+        return "";
+    }
+
+
+    /**
+     * 开始进行Gif生成
+     *
+     * @param path       Gif保存的路径.
+     * @param width      宽度.
+     * @param height     高度.
+     * @param bitmapList 传入的Bitmap数组.
+     * @return 是否成功.
+     */
+    public boolean encode(final String path, final int width, final int height, final Bitmap[] bitmapList) {
+        check(width, height);
+        if (bitmapList == null || bitmapList.length == 0) {
+            return false;
+        }
+        int state;
+        int[] pixels = new int[width * height];
+
+        state = init(path, width, height, mColor, mQuality, mDelay / 10);
+        if (state != 0) {
+            // 失败
+            return false;
+        }
+
+        for (Bitmap bitmap : bitmapList) {
+            if (width < bitmap.getWidth() || height < bitmap.getHeight()) {
+                bitmap = Bitmap.createScaledBitmap(bitmap, width, height, true);
+            }
+            bitmap.getPixels(pixels, 0, width, 0, 0, width, height);
+            addFrame(pixels);
+            bitmap.recycle();
+        }
+        close();
+
+        return true;
+    }
+
+    /**
+     * 开始进行Gif生成
+     *
+     * @param path       Gif保存的路径.
+     * @param bitmapList 传入的Bitmap数组.
+     * @return 是否成功.
+     */
+    public boolean encode(final String path, final Bitmap[] bitmapList) {
+        return encode(path, mWidth, mHeight, bitmapList);
+    }
+
+    /**
+     * 开始进行Gif生成
+     *
+     * @param context    上下文对象.
+     * @param path       Gif保存的路径.
+     * @param width      宽度.
+     * @param height     高度.
+     * @param typedArray Android资源数组对象.
+     * @return 是否成功.
      */
     public boolean encode(final Context context, final String path, final int width, final int height, final TypedArray typedArray) {
+        check(width, height);
         if (typedArray == null || typedArray.length() == 0) {
             return false;
         }
         int state;
         int[] pixels = new int[width * height];
 
-        state = Init(path, width, height, mColor, mQuality, mDelay / 10);
+        state = init(path, width, height, mColor, mQuality, mDelay / 10);
         if (state != 0) {
-            // Failed
+            // 失败
             return false;
         }
 
@@ -175,12 +348,24 @@ public class Gifflen {
                 bitmap = Bitmap.createScaledBitmap(bitmap, width, height, true);
             }
             bitmap.getPixels(pixels, 0, width, 0, 0, width, height);
-            AddFrame(pixels);
+            addFrame(pixels);
             bitmap.recycle();
         }
-        Close();
+        close();
 
         return true;
+    }
+
+    /**
+     * 开始进行Gif生成
+     *
+     * @param context    上下文对象.
+     * @param path       Gif保存的路径.
+     * @param typedArray Android资源数组对象.
+     * @return 是否成功.
+     */
+    public boolean encode(final Context context, final String path, final TypedArray typedArray) {
+        return encode(context, path, mWidth, mHeight, typedArray);
     }
 
     public static final class Builder {
@@ -214,36 +399,41 @@ public class Gifflen {
             return this;
         }
 
+        public Builder width(int wdith) {
+            this.width = wdith;
+            return this;
+        }
+
+        public Builder height(int height) {
+            this.height = height;
+            return this;
+        }
+
         public Gifflen build() {
             if (this.color < 2 || this.color > 256) {
-                throw new IllegalStateException("the mColor param should be 2...256!");
+                this.color = DEFAULT_COLOR;
             }
-            if (this.quality <= 0) {
-                quality = 1;
+            if (this.quality <= 0 || this.quality > 100) {
+                quality = DEFAULT_QUALITY;
             }
-            if (quality > 100) {
-                quality = 100;
+
+            if (this.delay <= 0) {
+                throw new IllegalStateException("the delay time value is invalid!!");
             }
-            if (delay <= 0) {
-                throw new IllegalStateException("the mDelay time must not be less than one miliisecond!");
+            if (this.width <= 0) {
+                throw new IllegalStateException("the width value is invalid!!");
             }
-            return new Gifflen(this.color, this.quality, this.delay);
+            if (this.height <= 0) {
+                throw new IllegalStateException("the height value is invalid!!");
+            }
+            return new Gifflen(this.color, this.quality, this.delay, width, height);
         }
     }
-    // TODO: 2017/3/25 增加encoding结束回调
-//    private CallBack mCallBack;
-//
-//    public void setCallBack(CallBack callBack) {
-//        mCallBack = callBack;
-//    }
-//
-//    public interface CallBack {
-//        void onFinish();
-//    }
-//
-//    public void callbackFromJni() {
-//        if (mCallBack != null) {
-//            mCallBack.onFinish();
-//        }
-//    }
+
+    private void check(final int width, final int height) {
+        if (width <= 0 || height <= 0) {
+            throw new IllegalStateException("the width or height value is invalid!!");
+        }
+    }
+    // TODO: 2017/3/25 native层增加encoding结束回调
 }
