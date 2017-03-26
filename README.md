@@ -22,7 +22,61 @@
 - 同时也支持ndk-build
 - 可以关联本地库到gradle
 
+### 使用方法
+1.初始化工具类Gifflen
+```
+Gifflen mGiffle = new Gifflen.Builder()
+                        .color(mColor)	//色域范围是2~256,且必须是2的整数次幂.
+                        .delay(mDelayTime) //每相邻两帧之间播放的时间间隔.
+                        .quality(mQuality) //色彩量化时的quality值.
+                        .width(500)	//生成Gif文件的宽度(像素).
+                        .height(500)	//生成Gif文件的高度(像素).
+                        .build();
+```
 
+2.开始创建Gif图片
+
+- 从File列表创建
+```
+	List<File> files = getFileList();
+        mGiffle.encode(320, 320, "target path", files);
+        mGiffle.encode("target path", files); 
+```
+
+- 从Uri列表创建
+```
+        List<Uri> uris = getUriList();
+        mGiffle.encode(context, 500, 500, uris);
+        mGiffle.encode(context, "target path", uris);
+```
+
+- 从TypeArray创建
+```
+	 TypeArra mDrawableList = getResources().obtainTypedArray(R.array.source);
+	 mGiffle.encode(MainActivity.this, "target path", 500, 500, mDrawableList);
+	 mGiffle.encode(MainActivity.this, "target path", mDrawableList);
+```
+
+- 从Bitmap数组创建
+```
+        Bitmap[] bitmaps = getBitmaps();
+        mGiffle.encode("target path", 500, 500, bitmaps);
+        mGiffle.encode("target path", bitmaps);
+```
+
+注意:此时要考虑Bitmap的大小以及个数,否则可能会造成OOM.
+
+- 从drawable id数组创建
+```
+	int[] drawableIds = new int[]{
+                R.drawable.mengbi1,
+                R.drawable.mengbi2,
+                R.drawable.mengbi3};
+        mGiffle.encode(context, "target path", 500, 500, drawableIds);
+        mGiffle.encode(context, "target path", drawableIds);
+```
+
+以上四种创建方式都支持重载,宽度和高度在encode()的时候都可以缺省,这时会使用创建Gifflen时传入的值,如果创建Gifflen时仍然没有传值,则会使用一个默认的值320.
 
 
 具体的实现原理以及细节可以移步我的博客: [lchad](https://www.lchad.github.io)
