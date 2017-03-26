@@ -7,8 +7,6 @@
 ## 示例Apk程序
 [点我下载](https://fir.im/18z5)
 
----
-
 ## 一脸懵逼.gif 是如何产生的?
 ![](/img/GIF.gif)
 
@@ -22,8 +20,19 @@
 - 同时也支持ndk-build
 - 可以关联本地库到gradle
 
+---
+
 ## 使用方法
-1.初始化工具类Gifflen
+
+1.添加动态链接库
+
+在此项目根目录下的so目录有我编译好的动态链接库文件,包含`arm-v8a`, `armaib`, `armabi-v7a`, `mips`, `mips64`, `x86`, `x86-64` 等7个平台,你可以根据自己的需要添加对应的native library到项目中.
+
+2.添加Gifflen工具类
+
+应用层的所有接口都在Gifflen这个类中,你要做的就是在自己项目的app/main/java路径下创建com/lchad/gifflen文件夹,然后把Gifflen.java复制到这个路径下,注意,请一定要把Gifflen.java放到以上指定位置(即your project name/app/main/java/com/lchad/gifflen)下,否则会在运行时报错,找不到jni方法.这一点需格外注意.
+
+3.初始化工具类Gifflen
 ```
 Gifflen mGiffle = new Gifflen.Builder()
                         .color(mColor)	//色域范围是2~256,且必须是2的整数次幂.
@@ -34,7 +43,7 @@ Gifflen mGiffle = new Gifflen.Builder()
                         .build();
 ```
 
-2.开始创建Gif图片
+4.开始创建Gif图片
 
 - 从File列表创建
 ```
