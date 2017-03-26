@@ -52,12 +52,12 @@ FILE *pGif = NULL;
 
 extern "C"
 {
-JNIEXPORT jint JNICALL Java_com_lchad_gifflen_Gifflen_Init(JNIEnv *ioEnv, jobject ioThis,
+JNIEXPORT jint JNICALL Java_com_lchad_gifflen_Gifflen_init(JNIEnv *ioEnv, jobject ioThis,
                                                           jstring gifName,
                                                           jint w, jint h, jint numColors,
                                                           jint quality, jint frameDelay);
-JNIEXPORT void JNICALL Java_com_lchad_gifflen_Gifflen_Close(JNIEnv *ioEnv, jobject ioThis);
-JNIEXPORT jint JNICALL Java_com_lchad_gifflen_Gifflen_AddFrame(JNIEnv *ioEnv, jobject ioThis,
+JNIEXPORT void JNICALL Java_com_lchad_gifflen_Gifflen_close(JNIEnv *ioEnv, jobject ioThis);
+JNIEXPORT jint JNICALL Java_com_lchad_gifflen_Gifflen_addFrame(JNIEnv *ioEnv, jobject ioThis,
                                                               jintArray inArray);
 };
 
@@ -77,7 +77,7 @@ jint JNI_OnLoad(JavaVM *vm, void *reserved) {
 }
 
 
-JNIEXPORT jint JNICALL Java_com_lchad_gifflen_Gifflen_Init(JNIEnv *ioEnv, jobject ioThis,
+JNIEXPORT jint JNICALL Java_com_lchad_gifflen_Gifflen_init(JNIEnv *ioEnv, jobject ioThis,
                                                           jstring gifName,
                                                           jint w, jint h, jint numColors,
                                                           jint quality, jint frameDelay) {
@@ -140,7 +140,7 @@ JNIEXPORT jint JNICALL Java_com_lchad_gifflen_Gifflen_Init(JNIEnv *ioEnv, jobjec
 }
 
 
-JNIEXPORT void JNICALL Java_com_lchad_gifflen_Gifflen_Close(JNIEnv *ioEnv, jobject ioThis) {
+JNIEXPORT void JNICALL Java_com_lchad_gifflen_Gifflen_close(JNIEnv *ioEnv, jobject ioThis) {
     if (data32bpp) {
         delete[] data32bpp;
         data32bpp = NULL;
@@ -165,7 +165,7 @@ JNIEXPORT void JNICALL Java_com_lchad_gifflen_Gifflen_Close(JNIEnv *ioEnv, jobje
 }
 
 
-JNIEXPORT jint JNICALL Java_com_lchad_gifflen_Gifflen_AddFrame(JNIEnv *ioEnv, jobject ioThis,
+JNIEXPORT jint JNICALL Java_com_lchad_gifflen_Gifflen_addFrame(JNIEnv *ioEnv, jobject ioThis,
                                                               jintArray inArray) {
     ioEnv->GetIntArrayRegion(inArray, (jint) 0, (jint) (inDIB.width * inDIB.height),
                              (jint *) (inDIB.bits));
