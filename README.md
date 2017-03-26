@@ -4,7 +4,7 @@
 
 ![](app/src/main/res/mipmap-xxhdpi/ic_launcher_square.png)
 
-### 示例Apk程序
+## 示例Apk程序
 [点我下载](https://fir.im/18z5)
 
 ---
@@ -22,7 +22,7 @@
 - 同时也支持ndk-build
 - 可以关联本地库到gradle
 
-### 使用方法
+## 使用方法
 1.初始化工具类Gifflen
 ```
 Gifflen mGiffle = new Gifflen.Builder()
@@ -62,9 +62,10 @@ Gifflen mGiffle = new Gifflen.Builder()
         Bitmap[] bitmaps = getBitmaps();
         mGiffle.encode("target path", 500, 500, bitmaps);
         mGiffle.encode("target path", bitmaps);
+	//注意:此时要考虑Bitmap的大小以及个数,否则可能会造成OOM.
 ```
 
-注意:此时要考虑Bitmap的大小以及个数,否则可能会造成OOM.
+
 
 - 从drawable id数组创建
 ```
