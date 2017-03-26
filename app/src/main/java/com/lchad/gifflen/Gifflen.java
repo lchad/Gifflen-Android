@@ -26,7 +26,7 @@ public class Gifflen {
     private static final String TAG = "Giffle";
 
     static {
-        System.loadLibrary("gifflen-lib");
+        System.loadLibrary("gifflen");
     }
 
     private static final int DEFAULT_COLOR = 256;
