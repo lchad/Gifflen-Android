@@ -11,14 +11,9 @@
 ![](/img/GIF.gif)
 
 
-由于Android平台对Gif的支持不是很好,所以我们需要通过C++来对图片进行 Color Quantization.这个项目的算法是基于 [Gifflen](http://jiggawatt.org/badc0de/android/index.html#gifflen) 的.
+由于Android平台对Gif的支持不是很好,没有现成的Java Api可以用,所以我们需要借助NDK作为桥梁,通过C++语言实现对32-bit ARGB图片进行 Color Quantization,转化成Gif动态图(256色域).这个项目的色彩转换算法是基于 [Gifflen @Bitmap color reduction and GIF encoding](http://jiggawatt.org/badc0de/android/index.html#gifflen) 的.
 
-通过对Gifflen的C++源码进行一些定制和修改,然后编译出native library（即 .so 文件）,然后打包到 APK 中. Java 代码就可以通过 Java Native Interface（JNI）调用 native library 中的方法了。
-此项目采用CMake的方式来构建native code, 因为Android Studio2.2版本之后,其对NDK已经有了很好的支持:
-- 可以通过LLVM对底层代码跟踪断点,再也不用像以前一样只能靠打LOG瞎猜了
-- 默认使用 CMake 编译原生库
-- 同时也支持ndk-build
-- 可以关联本地库到gradle
+通过对Gifflen的C++源码进行一些定制和修改,然后编译出native library（即 .so 文件）,然后打包到 APK 中.我们可以很容易的在Android系统上创建一个Gif动图. 本项目的NDK部分代码是采用CMake的方式进行构建的.Android Studio2.2版本之后已经对NDK编程有了很好的支持.
 
 ---
 
@@ -101,7 +96,7 @@ Gifflen mGiffle = new Gifflen.Builder()
         mGiffle.encode(context, "target path", drawableIds);
 ```
 
-以上五种创建方式都支持重载,宽度和高度在encode()的时候都可以缺省,这时会使用创建Gifflen时传入的值,如果创建Gifflen时仍然没有传值,则会使用一个默认的值320.
+以上五种创建方式都支持重载(本质上都是对Bitmap进行操作),宽度和高度在encode()的时候都可以缺省,这时会使用创建Gifflen时传入的值,如果创建Gifflen时仍然没有传值,则会使用一个默认的值320.
 
 
 我开了一个使用GIfflen-Android的示例项目: [GIfflen-Android-Config-Sample](https://github.com/lchad/Gifflen-Config-Sample),可以做一个参考.
