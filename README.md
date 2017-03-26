@@ -86,7 +86,7 @@ Gifflen mGiffle = new Gifflen.Builder()
         mGiffle.encode(context, "target path", drawableIds);
 ```
 
-以上四种创建方式都支持重载,宽度和高度在encode()的时候都可以缺省,这时会使用创建Gifflen时传入的值,如果创建Gifflen时仍然没有传值,则会使用一个默认的值320.
+以上五种创建方式都支持重载,宽度和高度在encode()的时候都可以缺省,这时会使用创建Gifflen时传入的值,如果创建Gifflen时仍然没有传值,则会使用一个默认的值320.
 
 
 具体的实现原理以及细节可以移步我的博客: [lchad](https://www.lchad.github.io)
