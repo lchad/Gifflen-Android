@@ -13,15 +13,18 @@ import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.TextView;
 
+import butterknife.BindView;
+import butterknife.ButterKnife;
+
 public class MengBiListActivity extends AppCompatActivity {
 
-    private RecyclerView mRecyclerView;
+    @BindView(R.id.recycler_view) RecyclerView mRecyclerView;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_meng_bi_list);
-        mRecyclerView = (RecyclerView) findViewById(R.id.recycler_view);
+        ButterKnife.bind(this);
         GridLayoutManager manager = new GridLayoutManager(MengBiListActivity.this, 2);
 
         MengbiAdapter mengbiAdapter = new MengbiAdapter(MengBiListActivity.this);
@@ -59,14 +62,12 @@ public class MengBiListActivity extends AppCompatActivity {
 
     static class MengbiViewHolder extends RecyclerView.ViewHolder {
 
-        private ImageView mImageView;
-
-        private TextView mTextView;
+        @BindView(R.id.image) ImageView mImageView;
+        @BindView(R.id.position) TextView mTextView;
 
         public MengbiViewHolder(View itemView) {
             super(itemView);
-            mImageView = (ImageView) itemView.findViewById(R.id.image);
-            mTextView = (TextView) itemView.findViewById(R.id.position);
+            ButterKnife.bind(this, itemView);
         }
 
         public void bind(int position, int resId) {
