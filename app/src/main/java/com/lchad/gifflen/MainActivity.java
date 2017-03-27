@@ -20,6 +20,8 @@ import android.widget.Toast;
 import java.io.File;
 import java.io.IOException;
 
+import butterknife.BindView;
+import butterknife.ButterKnife;
 import pl.droidsonroids.gif.GifDrawable;
 import pl.droidsonroids.gif.GifImageView;
 
@@ -36,31 +38,31 @@ public class MainActivity extends AppCompatActivity implements SeekBar.OnSeekBar
     /**
      * 触发gif生成操作.
      */
-    private Button mGenerate;
+    @BindView(R.id.generate) Button mGenerate;
     /**
      * 点击跳转到资源图片(每一帧)的列表.
      */
-    private Button mSourceList;
-    private Button mReset;
+    @BindView(R.id.view_list) Button mSourceList;
+    @BindView(R.id.reset) Button mReset;
     /**
      * 展示生成后的gif图片.
      */
-    private GifImageView mGifImageView;
+    @BindView(R.id.gif_image) GifImageView mGifImageView;
     /**
      * 拖动SeekBar来修改delay值.
      */
-    private SeekBar mDelaySeekBar;
+    @BindView(R.id.delay_seek) SeekBar mDelaySeekBar;
     /**
      * gif量化质量.
      */
-    private SeekBar mQualitySeekBar;
-    private TextView mQualityText;
-    private TextView mDelayText;
-    private SeekBar mColorSeekBar;
-    private Button mDelayTip;
-    private Button mQualityTip;
-    private Button mColorTip;
-    private TextView mColorText;
+    @BindView(R.id.quality_seek) SeekBar mQualitySeekBar;
+    @BindView(R.id.delay_text) TextView mDelayText ;
+    @BindView(R.id.delay_tip) Button mDelayTip;
+    @BindView(R.id.quality_text) TextView mQualityText;
+    @BindView(R.id.quality_tip) Button mQualityTip;
+    @BindView(R.id.color_seek) SeekBar mColorSeekBar;
+    @BindView(R.id.color_tip) Button mColorTip;
+    @BindView(R.id.color_text) TextView mColorText;
     /**
      * gif生成后存放的路径.
      */
@@ -88,8 +90,8 @@ public class MainActivity extends AppCompatActivity implements SeekBar.OnSeekBar
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
+        ButterKnife.bind(this);
         mDrawableList = getResources().obtainTypedArray(R.array.source);
-        findView();
         initView();
 
         //动态获取读写文件的权限.
@@ -171,25 +173,6 @@ public class MainActivity extends AppCompatActivity implements SeekBar.OnSeekBar
                 startActivity(new Intent(MainActivity.this, MengBiListActivity.class));
                 break;
         }
-    }
-
-    private void findView() {
-        mReset = (Button) findViewById(R.id.reset);
-        mDelaySeekBar = (SeekBar) findViewById(R.id.delay_seek);
-        mDelayText = (TextView) findViewById(R.id.delay_text);
-        mDelayTip = (Button) findViewById(R.id.delay_tip);
-
-        mGifImageView = (GifImageView) findViewById(R.id.gif_image);
-        mSourceList = (Button) findViewById(R.id.view_list);
-        mGenerate = (Button) findViewById(R.id.generate);
-
-        mQualitySeekBar = (SeekBar) findViewById(R.id.quality_seek);
-        mQualityText = (TextView) findViewById(R.id.quality_text);
-        mQualityTip = (Button) findViewById(R.id.quality_tip);
-
-        mColorSeekBar = (SeekBar) findViewById(R.id.color_seek);
-        mColorTip = (Button) findViewById(R.id.color_tip);
-        mColorText = (TextView) findViewById(R.id.color_text);
     }
 
     /**

@@ -15,7 +15,14 @@ android {
                 cppFlags "-frtti -fexceptions"
             }
         }
+//        ndk{
+//            abiFilters ('x86', 'armeabi', 'armeabi-v7a')
+//        }
+
     }
+
+
+
     buildTypes {
         release {
             minifyEnabled false
@@ -26,6 +33,8 @@ android {
         cmake {
             path "CMakeLists.txt"
         }
+
+
     }
 }
 
@@ -41,4 +50,6 @@ dependencies {
     testCompile 'junit:junit:4.12'
 
     compile 'pl.droidsonroids.gif:android-gif-drawable:1.2.6'
+    compile "com.jakewharton:butterknife:8.4.0"
+    compile "com.jakewharton:butterknife-compiler:8.4.0"
 }
