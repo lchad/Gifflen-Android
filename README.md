@@ -50,6 +50,18 @@ Gifflen mGiffle = new Gifflen.Builder()
                         .quality(mQuality) //色彩量化时的quality值.
                         .width(500)	//生成Gif文件的宽度(像素).
                         .height(500)	//生成Gif文件的高度(像素).
+                        .listener(new Gifflen.OnEncodeFinishListener() {  //创建完毕的回调
+                             @Override
+                             public void onEncodeFinish(String path) {
+                                 Toast.makeText(MainActivity.this, "已保存gif到" + mStorePath, Toast.LENGTH_LONG).show();
+                                 try {
+                                     GifDrawable gifFromPath = new GifDrawable(mStorePath);
+                                     mGifImageView.setImageDrawable(gifFromPath);
+                                 } catch (IOException e) {
+                                     e.printStackTrace();
+                                 }
+                             }
+                         })
                         .build();
 ```
 
@@ -97,7 +109,7 @@ Gifflen mGiffle = new Gifflen.Builder()
 ```
 
 以上五种创建方式都支持重载(本质上都是对Bitmap进行操作),宽度和高度在encode()的时候都可以缺省,这时会使用创建Gifflen时传入的值,如果创建Gifflen时仍然没有传值,则会使用一个默认的值320.
-
+encode()属于耗时操作,建议将其执行放到子线程内部,以免阻塞UI线程.
 
 我开了一个使用GIfflen-Android的示例项目: [GIfflen-Android-Config-Sample](https://github.com/lchad/Gifflen-Config-Sample),可以做一个参考.
 

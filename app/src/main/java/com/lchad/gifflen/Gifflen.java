@@ -7,6 +7,8 @@ import android.database.Cursor;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.net.Uri;
+import android.os.Handler;
+import android.os.Looper;
 import android.provider.MediaStore;
 import android.text.TextUtils;
 import android.util.Log;
@@ -23,7 +25,7 @@ import java.util.List;
 
 public class Gifflen {
 
-    private static final String TAG = "Giffle";
+    private static final String TAG = "Gifflen";
 
     static {
         System.loadLibrary("gifflen");
@@ -41,12 +43,18 @@ public class Gifflen {
     private int mWidth;
     private int mHeight;
 
-    private Gifflen(int color, int quality, int delay, int width, int height) {
+    private String mTargetPath;
+
+    private Handler mHandler;
+
+    private Gifflen(int color, int quality, int delay, int width, int height, OnEncodeFinishListener onEncodeFinishListener) {
         this.mColor = color;
         this.mQuality = quality;
         this.mDelay = delay;
         this.mWidth = width;
         this.mHeight = height;
+        this.mOnEncodeFinishListener = onEncodeFinishListener;
+        mHandler = new Handler(Looper.getMainLooper());
     }
 
     /**
@@ -94,7 +102,7 @@ public class Gifflen {
      * @return 是否成功
      */
     public boolean encode(int width, int height, String path, List<File> files) {
-        check(width, height);
+        check(width, height, path);
         int state;
         int[] pixels = new int[width * height];
 
@@ -147,7 +155,7 @@ public class Gifflen {
      * @return 是否成功.
      */
     public boolean encode(final Context context, final String path, final int width, final int height, final int[] drawableList) {
-        check(width, height);
+        check(width, height, path);
         if (drawableList == null || drawableList.length == 0) {
             return false;
         }
@@ -198,7 +206,7 @@ public class Gifflen {
      * @return 是否成功.
      */
     public boolean encode(Context context, final String path, final int width, final int height, final List<Uri> uriList) {
-        check(width, height);
+        check(width, height, path);
         if (uriList == null || uriList.size() == 0) {
             return false;
         }
@@ -280,7 +288,7 @@ public class Gifflen {
      * @return 是否成功.
      */
     public boolean encode(final String path, final int width, final int height, final Bitmap[] bitmapList) {
-        check(width, height);
+        check(width, height, path);
         if (bitmapList == null || bitmapList.length == 0) {
             return false;
         }
@@ -328,7 +336,7 @@ public class Gifflen {
      * @return 是否成功.
      */
     public boolean encode(final Context context, final String path, final int width, final int height, final TypedArray typedArray) {
-        check(width, height);
+        check(width, height, path);
         if (typedArray == null || typedArray.length() == 0) {
             return false;
         }
@@ -384,6 +392,8 @@ public class Gifflen {
         private int width;
         private int height;
 
+        private OnEncodeFinishListener onEncodeFinishListener;
+
         public Builder color(int color) {
             this.color = color;
             return this;
@@ -409,6 +419,11 @@ public class Gifflen {
             return this;
         }
 
+        public Builder listener(OnEncodeFinishListener onEncodeFinishListener) {
+            this.onEncodeFinishListener = onEncodeFinishListener;
+            return this;
+        }
+
         public Gifflen build() {
             if (this.color < 2 || this.color > 256) {
                 this.color = DEFAULT_COLOR;
@@ -426,14 +441,40 @@ public class Gifflen {
             if (this.height <= 0) {
                 throw new IllegalStateException("the height value is invalid!!");
             }
-            return new Gifflen(this.color, this.quality, this.delay, width, height);
+            return new Gifflen(this.color, this.quality, this.delay, width, height, onEncodeFinishListener);
         }
     }
 
-    private void check(final int width, final int height) {
+    private void check(final int width, final int height, String targetPath) {
+        if (targetPath != null && targetPath.length() > 0) {
+            mTargetPath = targetPath;
+        } else {
+            throw new IllegalStateException("the target path is invalid!!");
+        }
         if (width <= 0 || height <= 0) {
             throw new IllegalStateException("the width or height value is invalid!!");
         }
     }
-    // TODO: 2017/3/25 native层增加encoding结束回调
+
+    public void onEncodeFinish() {
+        if (mOnEncodeFinishListener != null) {
+            mHandler.post(new Runnable() {
+                @Override
+                public void run() {
+                    mOnEncodeFinishListener.onEncodeFinish(mTargetPath);
+                }
+            });
+        }
+    }
+
+    private OnEncodeFinishListener mOnEncodeFinishListener;
+
+//    public void setOnEncodeFinishListener(OnEncodeFinishListener onEncodeFinishListener) {
+//        this.mOnEncodeFinishListener = onEncodeFinishListener;
+//    }
+
+    public interface OnEncodeFinishListener {
+        void onEncodeFinish(String path);
+    }
+
 }

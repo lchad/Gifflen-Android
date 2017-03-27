@@ -30,7 +30,7 @@ public class MengBiListActivity extends AppCompatActivity {
         mRecyclerView.setAdapter(mengbiAdapter);
     }
 
-    static class MengbiAdapter extends RecyclerView.Adapter<MengbiViewHolder> {
+    private static class MengbiAdapter extends RecyclerView.Adapter<MengbiViewHolder> {
 
         private final Context context;
 
@@ -75,7 +75,7 @@ public class MengBiListActivity extends AppCompatActivity {
         }
     }
 
-    static class SpaceItemDecoration extends RecyclerView.ItemDecoration {
+    private static class SpaceItemDecoration extends RecyclerView.ItemDecoration {
 
         private int space;
 

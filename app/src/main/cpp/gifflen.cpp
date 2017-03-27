@@ -91,6 +91,7 @@ JNIEXPORT jint JNICALL Java_com_lchad_gifflen_Gifflen_init(JNIEnv *ioEnv, jobjec
 
     if ((pGif = fopen(str, "wb")) == NULL) {
         ioEnv->ReleaseStringUTFChars(gifName, str);
+        __android_log_write(ANDROID_LOG_VERBOSE, "gifflen open file failed : ",str);
         return -2;
     }
 
@@ -144,9 +145,6 @@ JNIEXPORT void JNICALL Java_com_lchad_gifflen_Gifflen_close(JNIEnv *ioEnv, jobje
     if (data32bpp) {
         delete[] data32bpp;
         data32bpp = NULL;
-
-//        jclass clazz = ioEnv->FindClass("Lcom.lchad.gifflen.Giffle");
-//        jmethodID method = ioEnv->GetMethodID(clazz, "callbackFromJni", "()V");
     }
     if (outDIB) {
         if (outDIB->palette) delete[] outDIB->palette;
@@ -161,6 +159,12 @@ JNIEXPORT void JNICALL Java_com_lchad_gifflen_Gifflen_close(JNIEnv *ioEnv, jobje
     if (neuQuant) {
         delete neuQuant;
         neuQuant = NULL;
+    }
+
+    jclass clazz = ioEnv->GetObjectClass(ioThis);
+    jmethodID method = ioEnv->GetMethodID(clazz, "onEncodeFinish", "()V");
+    if (method != 0) {
+        ioEnv->CallVoidMethod(ioThis, method);
     }
 }
 

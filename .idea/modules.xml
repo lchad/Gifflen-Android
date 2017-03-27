@@ -3,6 +3,7 @@
   <component name="ProjectModuleManager">
     <modules>
       <module fileurl="file://$PROJECT_DIR$/Gifflen.iml" filepath="$PROJECT_DIR$/Gifflen.iml" />
+      <module fileurl="file://$PROJECT_DIR$/Gifflen-Android.iml" filepath="$PROJECT_DIR$/Gifflen-Android.iml" />
       <module fileurl="file://$PROJECT_DIR$/app/app.iml" filepath="$PROJECT_DIR$/app/app.iml" />
     </modules>
   </component>

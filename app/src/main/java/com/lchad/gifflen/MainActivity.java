@@ -28,7 +28,7 @@ import pl.droidsonroids.gif.GifImageView;
  * Github : https://www.github.com/lchad
  */
 
-public class MainActivity extends AppCompatActivity implements SeekBar.OnSeekBarChangeListener {
+public class MainActivity extends AppCompatActivity implements SeekBar.OnSeekBarChangeListener, View.OnClickListener {
     /**
      * 申请权限返回标志字段
      */
@@ -105,70 +105,72 @@ public class MainActivity extends AppCompatActivity implements SeekBar.OnSeekBar
         mDelaySeekBar.setOnSeekBarChangeListener(this);
         mQualitySeekBar.setOnSeekBarChangeListener(this);
         mColorSeekBar.setOnSeekBarChangeListener(this);
-        mSourceList.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                startActivity(new Intent(MainActivity.this, MengBiListActivity.class));
-            }
-        });
 
-        mGenerate.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                mGiffle = new Gifflen.Builder()
-                        .color(mColor)
-                        .delay(mDelayTime)
-                        .quality(mQuality)
-                        .build();
-                mStorePath = Environment.getExternalStorageDirectory().getAbsolutePath() +
-                        File.separator + "gifflen-" + mQuality + "-" + mColor + "-" + mDelayTime + "-sapmle.gif";
-                mGiffle.encode(MainActivity.this, mStorePath, 320, 320, mDrawableList);
-                Toast.makeText(MainActivity.this, "已保存gif到" + mStorePath, Toast.LENGTH_LONG).show();
-                try {
-                    GifDrawable gifFromPath = new GifDrawable(mStorePath);
-                    mGifImageView.setImageDrawable(gifFromPath);
-                } catch (IOException e) {
-                    e.printStackTrace();
-                }
-            }
-        });
+        mSourceList.setOnClickListener(this);
+        mGenerate.setOnClickListener(this);
+        mDelayTip.setOnClickListener(this);
+        mQualityTip.setOnClickListener(this);
+        mColorTip.setOnClickListener(this);
+        mReset.setOnClickListener(this);
+    }
 
-        mDelayTip.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                new AlertDialog.Builder(MainActivity.this)
-                        .setTitle(getString(R.string.delay_tips))
-                        .setView(getLayoutInflater().inflate(R.layout.delay_tips, null))
-                        .show();
-            }
-        });
-        mQualityTip.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                new AlertDialog.Builder(MainActivity.this)
-                        .setTitle(getString(R.string.quality_tips))
-                        .setView(getLayoutInflater().inflate(R.layout.quality_tips, null))
-                        .show();
-            }
-        });
-
-        mColorTip.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
+    @Override
+    public void onClick(View v) {
+        switch (v.getId()) {
+            case R.id.color_tip:
                 new AlertDialog.Builder(MainActivity.this)
                         .setTitle(getString(R.string.color_tips))
                         .setView(getLayoutInflater().inflate(R.layout.color_tips, null))
                         .show();
-            }
-        });
-        mReset.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
+                break;
+            case R.id.quality_tip:
+                new AlertDialog.Builder(MainActivity.this)
+                        .setTitle(getString(R.string.quality_tips))
+                        .setView(getLayoutInflater().inflate(R.layout.quality_tips, null))
+                        .show();
+                break;
+            case R.id.delay_tip:
+                new AlertDialog.Builder(MainActivity.this)
+                        .setTitle(getString(R.string.delay_tips))
+                        .setView(getLayoutInflater().inflate(R.layout.delay_tips, null))
+                        .show();
+                break;
+            case R.id.reset:
                 mDelaySeekBar.setProgress(500);
                 mQualitySeekBar.setProgress(10);
                 mColorSeekBar.setProgress(8);
-            }
-        });
+                break;
+            case R.id.generate:
+                mGiffle = new Gifflen.Builder()
+                        .color(mColor)
+                        .delay(mDelayTime)
+                        .quality(mQuality)
+                        .listener(new Gifflen.OnEncodeFinishListener() {
+                            @Override
+                            public void onEncodeFinish(String path) {
+                                Toast.makeText(MainActivity.this, "已保存gif到" + path, Toast.LENGTH_LONG).show();
+                                try {
+                                    GifDrawable gifFromPath = new GifDrawable(mStorePath);
+                                    mGifImageView.setImageDrawable(gifFromPath);
+                                } catch (IOException e) {
+                                    e.printStackTrace();
+                                }
+                            }
+                        })
+                        .build();
+                mStorePath = Environment.getExternalStorageDirectory().getAbsolutePath() +
+                        File.separator + "gifflen-" + mQuality + "-" + mColor + "-" + mDelayTime + "-sapmle.gif";
+                new Thread(new Runnable() {
+                    @Override
+                    public void run() {
+                        mGiffle.encode(MainActivity.this, mStorePath, 320, 320, mDrawableList);
+                    }
+                }).start();
+                break;
+            case R.id.view_list:
+                startActivity(new Intent(MainActivity.this, MengBiListActivity.class));
+                break;
+        }
     }
 
     private void findView() {
@@ -225,16 +227,13 @@ public class MainActivity extends AppCompatActivity implements SeekBar.OnSeekBar
                 mColor = (int) Math.pow(2, progress);
                 mColorText.setText("" + mColor + "");
         }
-
     }
 
     @Override
     public void onStartTrackingTouch(SeekBar seekBar) {
-
     }
 
     @Override
     public void onStopTrackingTouch(SeekBar seekBar) {
-
     }
 }
