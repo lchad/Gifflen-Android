@@ -23,7 +23,7 @@
 
 在此项目根目录下的so目录有我编译好的动态链接库文件,包含`arm-v8a`, `armaib`, `armabi-v7a`, `mips`, `mips64`, `x86`, `x86-64` 等7个平台,你可以根据自己的需要添加对应的native library到项目中.
 
-**2.添加Gifflen工具类**
+**2.添加 Gifflen 工具类**
 
 应用层的所有接口都在Gifflen.java这个类中,你要做的就是在自己项目的app/main/java路径下创建com/lchad/gifflen文件夹,然后把Gifflen.java复制到这个路径下,注意,请一定要把Gifflen.java放到以上指定位置(即your project name/app/main/java/com/lchad/gifflen)下,否则会在运行时报错,找不到jni方法.这一点需格外注意.
 
@@ -42,7 +42,7 @@
                     REQUEST_PERMISSIONS);
 ```
 
-**4.初始化工具类Gifflen**
+**4.初始化工具类 Gifflen **
 ```
 Gifflen mGiffle = new Gifflen.Builder()
                         .color(mColor)	//色域范围是2~256,且必须是2的整数次幂.
@@ -53,7 +53,7 @@ Gifflen mGiffle = new Gifflen.Builder()
                         .listener(new Gifflen.OnEncodeFinishListener() {  //创建完毕的回调
                              @Override
                              public void onEncodeFinish(String path) {
-                                 Toast.makeText(MainActivity.this, "已保存gif到" + mStorePath, Toast.LENGTH_LONG).show();
+                                 Toast.makeText(MainActivity.this, "已保存gif到" + path, Toast.LENGTH_LONG).show();
                                  try {
                                      GifDrawable gifFromPath = new GifDrawable(mStorePath);
                                      mGifImageView.setImageDrawable(gifFromPath);
@@ -65,7 +65,7 @@ Gifflen mGiffle = new Gifflen.Builder()
                         .build();
 ```
 
-**5.开始创建Gif图片**
+**5.开始创建 Gif 图片**
 
 - 从File列表创建
 ```
@@ -74,21 +74,21 @@ Gifflen mGiffle = new Gifflen.Builder()
         mGiffle.encode("target path", files); 
 ```
 
-- 从Uri列表创建
+- 从 Uri 列表创建
 ```
         List<Uri> uris = getUriList();
         mGiffle.encode(context, 500, 500, uris);
         mGiffle.encode(context, "target path", uris);
 ```
 
-- 从TypeArray创建
+- 从 TypeArray 创建
 ```
 	 TypeArra mDrawableList = getResources().obtainTypedArray(R.array.source);
 	 mGiffle.encode(MainActivity.this, "target path", 500, 500, mDrawableList);
 	 mGiffle.encode(MainActivity.this, "target path", mDrawableList);
 ```
 
-- 从Bitmap数组创建
+- 从 Bitmap 数组创建
 ```
         Bitmap[] bitmaps = getBitmaps();
         mGiffle.encode("target path", 500, 500, bitmaps);
@@ -98,7 +98,7 @@ Gifflen mGiffle = new Gifflen.Builder()
 
 
 
-- 从drawable id数组创建
+- 从drawable id 数组创建
 ```
 	int[] drawableIds = new int[]{
                 R.drawable.mengbi1,
