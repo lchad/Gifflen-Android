@@ -71,7 +71,7 @@ public class MainActivity extends AppCompatActivity implements SeekBar.OnSeekBar
     /**
      * 生成gif图片的工具类.
      */
-    private Gifflen mGiffle;
+    private Gifflen mGifflen;
 
     /**
      * 存储图片帧的资源id.
@@ -143,7 +143,7 @@ public class MainActivity extends AppCompatActivity implements SeekBar.OnSeekBar
                 mColorSeekBar.setProgress(8);
                 break;
             case R.id.generate:
-                mGiffle = new Gifflen.Builder()
+                mGifflen = new Gifflen.Builder()
                         .color(mColor)
                         .delay(mDelayTime)
                         .quality(mQuality)
@@ -165,7 +165,7 @@ public class MainActivity extends AppCompatActivity implements SeekBar.OnSeekBar
                 new Thread(new Runnable() {
                     @Override
                     public void run() {
-                        mGiffle.encode(MainActivity.this, mStorePath, 320, 320, mDrawableList);
+                        mGifflen.encode(MainActivity.this, mStorePath, 320, 320, mDrawableList);
                     }
                 }).start();
                 break;

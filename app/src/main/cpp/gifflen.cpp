@@ -53,12 +53,12 @@ FILE *pGif = NULL;
 extern "C"
 {
 JNIEXPORT jint JNICALL Java_com_lchad_gifflen_Gifflen_init(JNIEnv *ioEnv, jobject ioThis,
-                                                          jstring gifName,
-                                                          jint w, jint h, jint numColors,
-                                                          jint quality, jint frameDelay);
+                                                           jstring gifName,
+                                                           jint w, jint h, jint numColors,
+                                                           jint quality, jint frameDelay);
 JNIEXPORT void JNICALL Java_com_lchad_gifflen_Gifflen_close(JNIEnv *ioEnv, jobject ioThis);
 JNIEXPORT jint JNICALL Java_com_lchad_gifflen_Gifflen_addFrame(JNIEnv *ioEnv, jobject ioThis,
-                                                              jintArray inArray);
+                                                               jintArray inArray);
 };
 
 
@@ -78,20 +78,20 @@ jint JNI_OnLoad(JavaVM *vm, void *reserved) {
 
 
 JNIEXPORT jint JNICALL Java_com_lchad_gifflen_Gifflen_init(JNIEnv *ioEnv, jobject ioThis,
-                                                          jstring gifName,
-                                                          jint w, jint h, jint numColors,
-                                                          jint quality, jint frameDelay) {
+                                                           jstring gifName,
+                                                           jint w, jint h, jint numColors,
+                                                           jint quality, jint frameDelay) {
     const char *str;
     str = ioEnv->GetStringUTFChars(gifName, NULL);
     if (str == NULL) {
         return -1; /* OutOfMemoryError already thrown */
     }
 
-    __android_log_write(ANDROID_LOG_VERBOSE, "gifflen", str);
+    __android_log_write(ANDROID_LOG_VERBOSE, "com_lchad_gifflen", str);
 
     if ((pGif = fopen(str, "wb")) == NULL) {
         ioEnv->ReleaseStringUTFChars(gifName, str);
-        __android_log_write(ANDROID_LOG_VERBOSE, "gifflen open file failed : ",str);
+        __android_log_write(ANDROID_LOG_VERBOSE, "com_lchad_gifflen open file failed : ", str);
         return -2;
     }
 
@@ -103,7 +103,7 @@ JNIEXPORT jint JNICALL Java_com_lchad_gifflen_Gifflen_init(JNIEnv *ioEnv, jobjec
     imgw = w;
     imgh = h;
 
-    __android_log_write(ANDROID_LOG_VERBOSE, "gifflen", "Allocating memory for input DIB");
+    __android_log_write(ANDROID_LOG_VERBOSE, "com_lchad_gifflen", "Allocating memory for input DIB");
     data32bpp = new unsigned char[imgw * imgh * PIXEL_SIZE];
 
     inDIB.bits = data32bpp;
@@ -113,7 +113,7 @@ JNIEXPORT jint JNICALL Java_com_lchad_gifflen_Gifflen_init(JNIEnv *ioEnv, jobjec
     inDIB.pitch = imgw * PIXEL_SIZE;
     inDIB.palette = NULL;
 
-    __android_log_write(ANDROID_LOG_VERBOSE, "gifflen", "Allocating memory for output DIB");
+    __android_log_write(ANDROID_LOG_VERBOSE, "com_lchad_gifflen", "Allocating memory for output DIB");
     outDIB = new DIB(imgw, imgh, 8);
     outDIB->palette = new unsigned char[768];
 
@@ -169,10 +169,9 @@ JNIEXPORT void JNICALL Java_com_lchad_gifflen_Gifflen_close(JNIEnv *ioEnv, jobje
 }
 
 
-JNIEXPORT jint JNICALL Java_com_lchad_gifflen_Gifflen_addFrame(JNIEnv *ioEnv, jobject ioThis,
-                                                              jintArray inArray) {
-    ioEnv->GetIntArrayRegion(inArray, (jint) 0, (jint) (inDIB.width * inDIB.height),
-                             (jint *) (inDIB.bits));
+JNIEXPORT jint JNICALL Java_com_lchad_gifflen_Gifflen_addFrame(JNIEnv *ioEnv, jobject ioThis, jintArray inArray) {
+    //把上层的像素数组inArray,复制到inDIB.bits暂存区域内.(start=0, len=width*height)
+    ioEnv->GetIntArrayRegion(inArray, (jint) 0, (jint) (inDIB.width * inDIB.height), (jint *) (inDIB.bits));
 
     s[0] = '!';
     s[1] = 0xF9;
@@ -191,13 +190,13 @@ JNIEXPORT jint JNICALL Java_com_lchad_gifflen_Gifflen_addFrame(JNIEnv *ioEnv, jo
 
     fwrite(s, 1, 18, pGif);
 
-    __android_log_write(ANDROID_LOG_VERBOSE, "gifflen", "Quantising");
+    __android_log_write(ANDROID_LOG_VERBOSE, "com_lchad_gifflen", "Quantising");
 
     neuQuant->quantise(outDIB, &inDIB, optCol, optQuality, 0);
 
     fwrite(outDIB->palette, 1, optCol * 3, pGif);
 
-    __android_log_write(ANDROID_LOG_VERBOSE, "gifflen", "Doing GIF encoding");
+    __android_log_write(ANDROID_LOG_VERBOSE, "com_lchad_gifflen", "Doing GIF encoding");
     GIF_LZW_compressor(outDIB, optCol, pGif, 0);
 
     return 0;
@@ -219,19 +218,21 @@ short int hashtree[hash][3];
 int find_hash(int pre, int suf) {
     int i, o;
     i = ((pre * 256) ^ suf) % hash;
-    if (i == 0)
+    if (i == 0) {
         o = 1;
-    else
+    } else {
         o = hash - i;
+    }
     while (1) {
-        if (hashtree[i][0] == -1)
+        if (hashtree[i][0] == -1) {
             return i;
-        else if ((hashtree[i][1] == pre) && (hashtree[i][2] == suf))
+        } else if ((hashtree[i][1] == pre) && (hashtree[i][2] == suf)) {
             return i;
-        else {
+        } else {
             i = i - o;
-            if (i < 0)
+            if (i < 0) {
                 i += hash;
+            }
         }
     }
 
@@ -241,8 +242,9 @@ int find_hash(int pre, int suf) {
 
 int max_bits(int num) {
     for (int b = 0; b < 14; b++) {
-        if ((1 << b) >= num)
+        if ((1 << b) >= num) {
             return b;
+        }
     }
     return 0;
 }
@@ -279,8 +281,9 @@ int GIF_LZW_compressor(DIB *srcimg, unsigned int numColors, FILE *handle, int in
     for (i = 0; i < hash; i++) {
         hashtree[i][0] = hashtree[i][1] = hashtree[i][2] = -1;
     }
-    if (handle == NULL)
+    if (handle == NULL) {
         return 0;
+    }
     xdim = srcimg->width;
     ydim = srcimg->height;
     bits_color = max_bits(numColors) - 1;
@@ -311,10 +314,10 @@ int GIF_LZW_compressor(DIB *srcimg, unsigned int numColors, FILE *handle, int in
         for (int e = 2; e <= ydim; e += 2) {
             rasters[rasterlen++] = e;
         }
-    }
-    else {
-        for (int e = 1; e <= ydim; e++)
+    } else {
+        for (int e = 1; e <= ydim; e++) {
             rasters[rasterlen++] = e - 1;
+        }
     }
     pre = srcimg->bits[rasters[0] * xdim];
     x = 1;
@@ -332,20 +335,21 @@ int GIF_LZW_compressor(DIB *srcimg, unsigned int numColors, FILE *handle, int in
                 if (x >= xdim) {
                     y++;
                     x = 0;
-                    if (y >= ydim)
+                    if (y >= ydim) {
                         done = 1;
+                    }
                 }
                 i = find_hash(pre, suf);
-                if (hashtree[i][0] == -1)
+                if (hashtree[i][0] == -1) {
                     break;
-                else
+                } else
                     pre = hashtree[i][0];
-            }
-            else {
+            } else {
                 write_code(handle, bits, pre);
                 write_code(handle, bits, EOI);
-                if (stat_bits)
+                if (stat_bits) {
                     write_code(handle, bits, 0);
+                }
                 LZW[0] = LZWpos - 1;
                 fwrite(LZW, 1, LZWpos, handle);
                 fputc(0, handle);
@@ -375,9 +379,9 @@ int GIF_LZW_compressor(DIB *srcimg, unsigned int numColors, FILE *handle, int in
                     bits = 3;
                     max *= 2;
                 }
-            }
-            else
+            } else {
                 bits++;
+            }
         }
     }
 
@@ -406,15 +410,13 @@ void NeuQuant::quantise(DIB *destimage, DIB *srcimage, int numColors, int qualit
     quality /= 3;
     if (quality > 30) {
         quality = 30;
-    }
-    else if (quality < 1) {
+    } else if (quality < 1) {
         quality = 1;
     }
 
     if (numColors < 2) {
         numColors = 2;
-    }
-    else if (numColors > 256) {
+    } else if (numColors > 256) {
         numColors = 256;
     }
 
@@ -437,7 +439,7 @@ void NeuQuant::quantise(DIB *destimage, DIB *srcimage, int numColors, int qualit
     //printf("NeuQuant: Mapping colors.\n");
 
     for (i = srcimage->height - 1; i >= 0; i--) {
-        if (i & 1)
+        if (i & 1) {
             for (j = srcimage->width - 1; j >= 0; j--) {
                 destimage->bits[i * srcimage->width + j] = inxsearch(
                         srcimage->bits[i * srcimage->width * PIXEL_SIZE + j * PIXEL_SIZE],
@@ -447,7 +449,7 @@ void NeuQuant::quantise(DIB *destimage, DIB *srcimage, int numColors, int qualit
                         j,
                         i);
             }
-        else
+        } else {
             for (j = 0; j < srcimage->width; j++) {
                 destimage->bits[i * srcimage->width + j] = inxsearch(
                         srcimage->bits[i * srcimage->width * PIXEL_SIZE + j * PIXEL_SIZE],
@@ -457,6 +459,7 @@ void NeuQuant::quantise(DIB *destimage, DIB *srcimage, int numColors, int qualit
                         j,
                         i);
             }
+        }
     }
 
 }
@@ -549,7 +552,9 @@ void NeuQuant::unbiasnet() {
             /* OLD CODE: network[i][j] >>= netbiasshift; */
             /* Fix based on bug report by Juergen Weigert jw@suse.de */
             temp = (network[i][j] + (1 << (netbiasshift - 1))) >> netbiasshift;
-            if (temp > 255) temp = 255;
+            if (temp > 255) {
+                temp = 255;
+            }
             network[i][j] = temp;
         }
         network[i][3] = i;            /* record colour no */
@@ -563,11 +568,12 @@ void NeuQuant::unbiasnet() {
 void NeuQuant::writecolourmap(FILE *f) {
     int i, j;
 
-    for (i = 2; i >= 0; i--)
-        for (j = 0; j < netsize; j++)
+    for (i = 2; i >= 0; i--) {
+        for (j = 0; j < netsize; j++) {
             putc(network[j][i], f);
+        }
+    }
 }
-
 
 /* Insertion sort of network and building of netindex[0..255] (to do after unbias)
    ------------------------------------------------------------------------------- */
@@ -666,12 +672,10 @@ int NeuQuant::inxsearch(int b, int g, int r, int dither, int xpos, int ypos) {
                         if (dist == 0) {
                             bestd_dark = bestd_bright = dist;
                             darker = brighter = p[3];
-                        }
-                        else if ((lumadiff < 0) && (dist < bestd_dark)) {
+                        } else if ((lumadiff < 0) && (dist < bestd_dark)) {
                             bestd_dark = dist;
                             darker = p[3];
-                        }
-                        else if ((lumadiff > 0) && (dist < bestd_bright)) {
+                        } else if ((lumadiff > 0) && (dist < bestd_bright)) {
                             bestd_bright = dist;
                             brighter = p[3];
                         }
@@ -701,12 +705,10 @@ int NeuQuant::inxsearch(int b, int g, int r, int dither, int xpos, int ypos) {
                         if (dist == 0) {
                             bestd_dark = bestd_bright = dist;
                             darker = brighter = p[3];
-                        }
-                        else if ((lumadiff < 0) && (dist < bestd_dark)) {
+                        } else if ((lumadiff < 0) && (dist < bestd_dark)) {
                             bestd_dark = dist;
                             darker = p[3];
-                        }
-                        else if ((lumadiff > 0) && (dist < bestd_bright)) {
+                        } else if ((lumadiff > 0) && (dist < bestd_bright)) {
                             bestd_bright = dist;
                             brighter = p[3];
                         }
@@ -715,9 +717,7 @@ int NeuQuant::inxsearch(int b, int g, int r, int dither, int xpos, int ypos) {
                 }
             }
         }
-    }
-
-    else {
+    } else {
         while ((i < (int) netsize) || (j >= 0)) {
             if (i < (int) netsize) {
                 p = network[i];
@@ -765,18 +765,19 @@ int NeuQuant::inxsearch(int b, int g, int r, int dither, int xpos, int ypos) {
     }
 
     if ((darker == -1) && (brighter != -1)) darker = brighter;
-    else if ((brighter == -1) && (darker != -1)) brighter = darker;
+    else if ((brighter == -1) && (darker != -1)) {
+        brighter = darker;
+    }
 
     if (dither == 1) {
         if ((xpos ^ ypos) & 1) {
             return darker;
-        }
-        else {
+        } else {
             return brighter;
         }
-    }
-    else
+    } else {
         return best;
+    }
 }
 
 
@@ -803,12 +804,18 @@ int NeuQuant::contest(register int b, register int g, register int r) {
     for (i = 0; i < netsize; i++) {
         n = network[i];
         dist = n[0] - b;
-        if (dist < 0) dist = -dist;
+        if (dist < 0) {
+            dist = -dist;
+        }
         a = n[1] - g;
-        if (a < 0) a = -a;
+        if (a < 0) {
+            a = -a;
+        }
         dist += a;
         a = n[2] - r;
-        if (a < 0) a = -a;
+        if (a < 0) {
+            a = -a;
+        }
         dist += a;
         if (dist < bestd) {
             bestd = dist;
@@ -853,9 +860,13 @@ void NeuQuant::alterneigh(int rad, int i, register int b, register int g, regist
     register int *p, *q;
 
     lo = i - rad;
-    if (lo < -1) lo = -1;
+    if (lo < -1) {
+        lo = -1;
+    }
     hi = i + rad;
-    if (hi > netsize) hi = netsize;
+    if (hi > netsize) {
+        hi = netsize;
+    }
 
     j = i + 1;
     k = i - 1;
@@ -884,9 +895,9 @@ void NeuQuant::alterneigh(int rad, int i, register int b, register int g, regist
 }
 
 
-/* Main Learning Loop
-   ------------------ */
-
+/**
+ * Main Learning Loop
+ */
 void NeuQuant::learn() {
     int i, j, b, g, r;
     int radius, rad, alpha, step, delta, samplepixels;
@@ -903,21 +914,28 @@ void NeuQuant::learn() {
     radius = initradius;
 
     rad = radius >> radiusbiasshift;
-    if (rad <= 1) rad = 0;
-    for (i = 0; i < rad; i++)
+    if (rad <= 1) {
+        rad = 0;
+    }
+    for (i = 0; i < rad; i++) {
         radpower[i] = alpha * (((rad * rad - i * i) * radbias) / (rad * rad));
-
+    }
     //fprintf(stderr,"beginning 1D learning: initial radius=%d\n", rad);
     sprintf(s, "samplepixels = %d, rad = %d, a=%d, ad=%d, d=%d", samplepixels, rad, alpha, alphadec,
             delta);
-    __android_log_write(ANDROID_LOG_VERBOSE, "gifflen", s);
+    __android_log_write(ANDROID_LOG_VERBOSE, "com_lchad_gifflen", s);
 
-    if ((lengthcount % prime1) != 0) step = prime1;
-    else {
-        if ((lengthcount % prime2) != 0) step = prime2;
-        else {
-            if ((lengthcount % prime3) != 0) step = prime3;
-            else step = prime4;
+    if ((lengthcount % prime1) != 0) {
+        step = prime1;
+    } else {
+        if ((lengthcount % prime2) != 0) {
+            step = prime2;
+        } else {
+            if ((lengthcount % prime3) != 0) {
+                step = prime3;
+            } else {
+                step = prime4;
+            }
         }
     }
 
@@ -932,13 +950,12 @@ void NeuQuant::learn() {
         j = contest(b, g, r);
 
         altersingle(alpha, j, b, g, r);
-        if (rad) alterneigh(rad, j, b, g, r);   /* alter neighbours */
+        if (rad) {
+            alterneigh(rad, j, b, g, r); /* alter neighbours */
+        }
 
         p += step;
 
-        //if (p >= (unsigned int *)lim) p -= lengthcount;
-
-        //注释掉上面一行,改为如下,否则在运行时会报错.
         if (p >= (unsigned int *) lim) {
             p = (unsigned int *) thepicture;
         }
@@ -948,13 +965,15 @@ void NeuQuant::learn() {
             alpha -= alpha / alphadec;
             radius -= radius / radiusdec;
             rad = radius >> radiusbiasshift;
-            if (rad <= 1) rad = 0;
+            if (rad <= 1) {
+                rad = 0;
+            }
             for (j = 0; j < rad; j++)
                 radpower[j] = alpha * (((rad * rad - j * j) * radbias) / (rad * rad));
         }
     }
 
     sprintf(s, "final alpha = %f", ((float) alpha) / initalpha);
-    __android_log_write(ANDROID_LOG_VERBOSE, "gifflen", s);
+    __android_log_write(ANDROID_LOG_VERBOSE, "com_lchad_gifflen", s);
 }
 
