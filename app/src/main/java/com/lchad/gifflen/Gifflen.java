@@ -47,6 +47,8 @@ public class Gifflen {
 
     private Handler mHandler;
 
+    private OnEncodeFinishListener mOnEncodeFinishListener;
+
     private Gifflen(int color, int quality, int delay, int width, int height, OnEncodeFinishListener onEncodeFinishListener) {
         this.mColor = color;
         this.mQuality = quality;
@@ -69,8 +71,8 @@ public class Gifflen {
     /**
      * Gifflen addFrame
      *
-     * @param pixels
-     * @return
+     * @param pixels pixels array from bitmap
+     * @return 是否成功.
      */
     public native int addFrame(int[] pixels);
 
@@ -466,12 +468,6 @@ public class Gifflen {
             });
         }
     }
-
-    private OnEncodeFinishListener mOnEncodeFinishListener;
-
-//    public void setOnEncodeFinishListener(OnEncodeFinishListener onEncodeFinishListener) {
-//        this.mOnEncodeFinishListener = onEncodeFinishListener;
-//    }
 
     public interface OnEncodeFinishListener {
         void onEncodeFinish(String path);
