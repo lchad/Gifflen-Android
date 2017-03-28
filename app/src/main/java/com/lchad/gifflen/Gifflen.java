@@ -74,7 +74,7 @@ public class Gifflen {
      * @param pixels pixels array from bitmap
      * @return 是否成功.
      */
-    public native int addFrame(int[] pixels);
+    private native int addFrame(int[] pixels);
 
     /**
      * Gifflen init
@@ -87,12 +87,12 @@ public class Gifflen {
      * @param delay   相邻的两帧之间的时间间隔.
      * @return 如果返回值不是0, 就代表着执行失败.
      */
-    public native int init(String path, int width, int height, int color, int quality, int delay);
+    private native int init(String path, int width, int height, int color, int quality, int delay);
 
     /**
      * * native层做一些释放资源的操作.
      */
-    public native void close();
+    private native void close();
 
     /**
      * 开始进行Gif生成
@@ -263,8 +263,8 @@ public class Gifflen {
     public String getRealPathFromURI(Context context, Uri contentUri) {
         Cursor cursor = null;
         try {
-            String[] proj = {MediaStore.Images.Media.DATA};
-            cursor = context.getContentResolver().query(contentUri, proj, null, null, null);
+            String[] projection = {MediaStore.Images.Media.DATA};
+            cursor = context.getContentResolver().query(contentUri, projection, null, null, null);
             if (cursor != null) {
                 int column_index = cursor.getColumnIndexOrThrow(MediaStore.Images.Media.DATA);
                 cursor.moveToFirst();
