@@ -150,6 +150,7 @@ public class MainActivity extends AppCompatActivity implements SeekBar.OnSeekBar
                         .listener(new Gifflen.OnEncodeFinishListener() {
                             @Override
                             public void onEncodeFinish(String path) {
+                                mGifImageView.clearAnimation();
                                 Toast.makeText(MainActivity.this, "已保存gif到" + path, Toast.LENGTH_LONG).show();
                                 try {
                                     GifDrawable gifFromPath = new GifDrawable(mStorePath);
@@ -162,6 +163,8 @@ public class MainActivity extends AppCompatActivity implements SeekBar.OnSeekBar
                         .build();
                 mStorePath = Environment.getExternalStorageDirectory().getAbsolutePath() +
                         File.separator + "gifflen-" + mQuality + "-" + mColor + "-" + mDelayTime + "-sapmle.gif";
+                mGifImageView.setImageResource(R.drawable.web_hi_res_512);
+                mGifImageView.startAnimation(AnimationUtils.loadAnimation(MainActivity.this, R.anim.rotate));
                 new Thread(new Runnable() {
                     @Override
                     public void run() {
